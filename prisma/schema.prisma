@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl= env("DIRECT_URL")
+}
+
+model Kategori {
+  id        Int        @id @default(autoincrement())
+  nama      String     @unique @db.VarChar(255)
+  golongans Golongan[] // Relasi dengan Golongan
+}
+
+model Golongan {
+  id          Int      @id @default(autoincrement())
+  id_kategori Int
+  nama        String   @unique @db.VarChar(255)
+  kategori    Kategori @relation(fields: [id_kategori], references: [id], onDelete: Cascade)
+
+  @@index([id_kategori]) // Index untuk mempercepat pencarian
+}

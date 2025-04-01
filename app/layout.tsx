@@ -1,5 +1,7 @@
-import type { Metadata } from "next";
+import { AppSidebar } from "@/components/app-sidebar"; // Adjust the path as needed
+import { SidebarProvider } from "@/components/ui/sidebar"; // Import SidebarProvider
 import { Geist, Geist_Mono } from "next/font/google";
+import { Metadata } from "next";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -24,10 +26,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <SidebarProvider>
+          <div style={{ display: "flex" }}>
+            {/* Add the sidebar component */}
+            <AppSidebar />
+            {/* Main content area */}
+            <div style={{ flex: 1, paddingLeft: "250px" }}>
+              {/* Children components, like the page content */}
+              {children}
+            </div>
+          </div>
+        </SidebarProvider>
       </body>
     </html>
   );
