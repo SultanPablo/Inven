@@ -1,4 +1,5 @@
 import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
+import { title } from "process";
 
 // Menu items for "Kategori" and "Golongan".
 const items = [
@@ -9,6 +10,14 @@ const items = [
   {
     title: "Golongan",
     url: "/golongan", // Adjust this URL to your golongan page route
+  },
+  {
+    title:"Gedung",
+    url:"/gedung",
+  },
+  {
+    title:"Ruangan",
+    url:"/ruangan",
   },
 ];
 

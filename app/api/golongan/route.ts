@@ -4,14 +4,14 @@ import prisma from "@/app/lib/prisma";
 // 🆕 CREATE GOLONGAN
 export async function POST(req: Request) {
   try {
-    const { nama, id_kategori } = await req.json();
+    const { nama, id_kategori, kode_golongan } = await req.json();
 
-    if (!nama || !id_kategori) {
-      return NextResponse.json({ error: "Nama golongan dan kategori wajib diisi" }, { status: 400 });
+    if (!nama || !id_kategori || !kode_golongan) {
+      return NextResponse.json({ error: "Nama golongan, kategori, dan kode golongan wajib diisi" }, { status: 400 });
     }
 
     const golongan = await prisma.golongan.create({
-      data: { nama, id_kategori },
+      data: { nama, id_kategori, kode_golongan },
     });
 
     return NextResponse.json(golongan, { status: 201 });
@@ -20,6 +20,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Terjadi kesalahan saat menambah golongan" }, { status: 500 });
   }
 }
+
 
 // 📄 GET LIST GOLONGAN
 export async function GET() {
@@ -39,15 +40,15 @@ export async function GET() {
 // ✏️ UPDATE GOLONGAN
 export async function PUT(req: Request) {
   try {
-    const { id, nama, id_kategori } = await req.json();
+    const { id, nama, id_kategori, kode_golongan } = await req.json();
 
-    if (!id || !nama || !id_kategori) {
-      return NextResponse.json({ error: "ID, Nama golongan, dan kategori wajib diisi" }, { status: 400 });
+    if (!id || !nama || !id_kategori || !kode_golongan) {
+      return NextResponse.json({ error: "ID, Nama golongan, kategori, dan kode golongan wajib diisi" }, { status: 400 });
     }
 
     const updatedGolongan = await prisma.golongan.update({
       where: { id },
-      data: { nama, id_kategori },
+      data: { nama, id_kategori, kode_golongan },
     });
 
     return NextResponse.json(updatedGolongan, { status: 200 });
@@ -56,6 +57,7 @@ export async function PUT(req: Request) {
     return NextResponse.json({ error: "Gagal mengupdate golongan" }, { status: 500 });
   }
 }
+
 
 // ❌ DELETE GOLONGAN
 export async function DELETE(req: Request) {

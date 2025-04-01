@@ -125,7 +125,58 @@ exports.Prisma.KategoriScalarFieldEnum = {
 exports.Prisma.GolonganScalarFieldEnum = {
   id: 'id',
   id_kategori: 'id_kategori',
+  kode_golongan: 'kode_golongan',
   nama: 'nama'
+};
+
+exports.Prisma.GedungScalarFieldEnum = {
+  id: 'id',
+  nama: 'nama'
+};
+
+exports.Prisma.RuanganScalarFieldEnum = {
+  id: 'id',
+  id_gedung: 'id_gedung',
+  nama: 'nama'
+};
+
+exports.Prisma.InventarisScalarFieldEnum = {
+  id: 'id',
+  id_ruangan: 'id_ruangan',
+  id_golongan: 'id_golongan',
+  nama_inventaris: 'nama_inventaris',
+  tahun_perolehan: 'tahun_perolehan',
+  harga_perolehan: 'harga_perolehan',
+  bahan_merk: 'bahan_merk',
+  masa_manfaat: 'masa_manfaat',
+  umur_aset: 'umur_aset',
+  nilai_residu: 'nilai_residu',
+  persentase_garis_lurus: 'persentase_garis_lurus',
+  nilai_yang_dapat_disusutkan: 'nilai_yang_dapat_disusutkan',
+  beban_penyusutan_per_tahun: 'beban_penyusutan_per_tahun',
+  nilai_buku_akhir: 'nilai_buku_akhir',
+  jumlah: 'jumlah',
+  kondisi: 'kondisi',
+  barcode: 'barcode'
+};
+
+exports.Prisma.BarangHabisPakaiScalarFieldEnum = {
+  id: 'id',
+  id_golongan: 'id_golongan',
+  kode_barang: 'kode_barang',
+  nama_barang: 'nama_barang',
+  satuan: 'satuan'
+};
+
+exports.Prisma.TransaksiBarangHabisPakaiScalarFieldEnum = {
+  id: 'id',
+  id_barang_habis_pakai: 'id_barang_habis_pakai',
+  tanggal: 'tanggal',
+  uraian: 'uraian',
+  tanda_bukti: 'tanda_bukti',
+  jumlah_terima: 'jumlah_terima',
+  jumlah_keluar: 'jumlah_keluar',
+  sisa: 'sisa'
 };
 
 exports.Prisma.SortOrder = {
@@ -138,10 +189,23 @@ exports.Prisma.QueryMode = {
   insensitive: 'insensitive'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+exports.Kondisi = exports.$Enums.Kondisi = {
+  BAIK: 'BAIK',
+  RUSAK: 'RUSAK'
+};
 
 exports.Prisma.ModelName = {
   Kategori: 'Kategori',
-  Golongan: 'Golongan'
+  Golongan: 'Golongan',
+  Gedung: 'Gedung',
+  Ruangan: 'Ruangan',
+  Inventaris: 'Inventaris',
+  BarangHabisPakai: 'BarangHabisPakai',
+  TransaksiBarangHabisPakai: 'TransaksiBarangHabisPakai'
 };
 
 /**

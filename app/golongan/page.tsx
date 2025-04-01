@@ -22,6 +22,7 @@ type Kategori = {
 export default function GolonganPage() {
   const [golongan, setGolongan] = useState<Golongan[]>([]);
   const [kategori, setKategori] = useState<Kategori[]>([]); // Ensure kategori is always an array
+  const [kode_golongan, setKodeGolongan] = useState("");
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -53,22 +54,24 @@ export default function GolonganPage() {
 
   async function handleSave() {
     const method = selectedId ? "PUT" : "POST";
-    const body = selectedId ? { id: selectedId, nama, id_kategori } : { nama, id_kategori };
-
+    const body = selectedId ? { id: selectedId, nama, id_kategori, kode_golongan } : { nama, id_kategori, kode_golongan };
+  
     const res = await fetch("/api/golongan", {
       method,
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
-
+  
     if (res.ok) {
       fetchGolongan();
       setOpen(false);
       setNama("");
+      setKodeGolongan(""); // Reset kode golongan
       setIdKategori(null);
       setSelectedId(null);
     }
   }
+  
 
   async function handleDelete() {
     if (!selectedId) return;
@@ -94,34 +97,39 @@ export default function GolonganPage() {
           <Button onClick={() => { setNama(""); setIdKategori(null); setSelectedId(null); }}>Tambah Golongan</Button>
         </DialogTrigger>
         <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{selectedId ? "Edit" : "Tambah"} Golongan</DialogTitle>
-          </DialogHeader>
-          <Input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Nama Golongan" />
-          
-          {/* Select untuk memilih kategori */}
-          <Select value={id_kategori ? String(id_kategori) : ""} onValueChange={(value) => setIdKategori(Number(value))}>
-            <SelectTrigger>
-              <SelectValue placeholder="Pilih Kategori" />
-            </SelectTrigger>
-            <SelectContent>
-  {kategori.length > 0 ? (
-    kategori.map((kat) => (
-      <SelectItem key={kat.id} value={String(kat.id)}>
-        {kat.nama}
-      </SelectItem>
-    ))
-  ) : (
-    <SelectItem value="no-category" disabled>
-      No Categories Available
-    </SelectItem>
-  )}
-</SelectContent>
+  <DialogHeader>
+    <DialogTitle>{selectedId ? "Edit" : "Tambah"} Golongan</DialogTitle>
+  </DialogHeader>
+  
+  {/* Input untuk Nama Golongan */}
+  <Input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Nama Golongan" />
+  
+  {/* Input untuk Kode Golongan */}
+  <Input value={kode_golongan} onChange={(e) => setKodeGolongan(e.target.value)} placeholder="Kode Golongan" />
 
-          </Select>
-          
-          <Button onClick={handleSave}>{selectedId ? "Update" : "Simpan"}</Button>
-        </DialogContent>
+  {/* Select untuk memilih kategori */}
+  <Select value={id_kategori ? String(id_kategori) : ""} onValueChange={(value) => setIdKategori(Number(value))}>
+    <SelectTrigger>
+      <SelectValue placeholder="Pilih Kategori" />
+    </SelectTrigger>
+    <SelectContent>
+      {kategori.length > 0 ? (
+        kategori.map((kat) => (
+          <SelectItem key={kat.id} value={String(kat.id)}>
+            {kat.nama}
+          </SelectItem>
+        ))
+      ) : (
+        <SelectItem value="no-category" disabled>
+          No Categories Available
+        </SelectItem>
+      )}
+    </SelectContent>
+  </Select>
+  
+  <Button onClick={handleSave}>{selectedId ? "Update" : "Simpan"}</Button>
+</DialogContent>
+
       </Dialog>
 
       {/* Table */}

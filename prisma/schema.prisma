@@ -18,8 +18,95 @@ model Kategori {
 model Golongan {
   id          Int      @id @default(autoincrement())
   id_kategori Int
+  kode_golongan String   @unique @db.VarChar(255)
   nama        String   @unique @db.VarChar(255)
   kategori    Kategori @relation(fields: [id_kategori], references: [id], onDelete: Cascade)
-
+  inventaris        Inventaris[]
+  barangHabisPakai  BarangHabisPakai[]
   @@index([id_kategori]) // Index untuk mempercepat pencarian
+}
+
+model Gedung {
+  id        Int        @id @default(autoincrement())
+  nama      String     @unique @db.VarChar(255)
+  Ruangans Ruangan[] 
+}
+
+model Ruangan {
+  id          Int      @id @default(autoincrement())
+  id_gedung Int
+  nama        String   @unique @db.VarChar(255)
+  gedung    Gedung @relation(fields: [id_gedung], references: [id], onDelete: Cascade)
+  @@index([id_gedung])
+  inventaris Inventaris[]
+}
+
+model Inventaris {
+  id                 Int      @id @default(autoincrement())
+  id_ruangan         Int
+  id_golongan        Int
+  nama_inventaris    String   @db.VarChar(255)
+  tahun_perolehan    Int?
+  harga_perolehan    Int?
+  bahan_merk         String?  @db.VarChar(255)
+  masa_manfaat       Int?
+  umur_aset          Int?
+  nilai_residu       Int?
+  persentase_garis_lurus Decimal? @db.Decimal(15,2)
+  nilai_yang_dapat_disusutkan Int?
+  beban_penyusutan_per_tahun Int?
+  nilai_buku_akhir   Int?
+  jumlah             Int?
+  kondisi           Kondisi
+  barcode           String?  @db.VarChar(255)
+
+  // Relasi dengan Ruangan
+  ruangan  Ruangan  @relation(fields: [id_ruangan], references: [id], onDelete: Cascade)
+  
+
+  // Relasi dengan Golongan
+  golongan Golongan @relation(fields: [id_golongan], references: [id], onDelete: Cascade)
+
+  @@map("inventaris")
+  @@index([id_ruangan])  // Index untuk mempercepat pencarian
+  @@index([id_golongan]) // Index untuk mempercepat pencarian
+}
+
+enum Kondisi {
+  BAIK
+  RUSAK
+}
+
+model BarangHabisPakai {
+  id               Int     @id @default(autoincrement())
+  id_golongan      Int
+  kode_barang      String  @db.VarChar(50)
+  nama_barang      String  @db.VarChar(255)
+  satuan           String  @db.VarChar(50)
+
+  // Relasi dengan Golongan
+  golongan         Golongan @relation(fields: [id_golongan], references: [id], onDelete: Cascade)
+
+  // Relasi dengan transaksi
+  transaksi        TransaksiBarangHabisPakai[]
+
+  @@map("barang_habis_pakai")
+  @@index([id_golongan]) // Index untuk mempercepat pencarian berdasarkan golongan
+}
+
+model TransaksiBarangHabisPakai {
+  id                Int     @id @default(autoincrement())
+  id_barang_habis_pakai Int
+  tanggal           DateTime
+  uraian            String  @db.Text
+  tanda_bukti       String  @db.VarChar(50)
+  jumlah_terima     Int     @default(0)
+  jumlah_keluar     Int     @default(0)
+  sisa              Int     @default(0)
+
+  // Relasi dengan BarangHabisPakai
+  barang            BarangHabisPakai @relation(fields: [id_barang_habis_pakai], references: [id], onDelete: Cascade)
+
+  @@map("transaksi_barang_habis_pakai")
+  @@index([id_barang_habis_pakai]) // Index untuk mempercepat pencarian
 }
