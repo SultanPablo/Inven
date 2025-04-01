@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import cache from "memory-cache";
+
+// 🕒 Waktu cache (5 menit)
+const CACHE_DURATION = 5 * 60 * 1000;
 
 // 🆕 CREATE GOLONGAN
 export async function POST(req: Request) {
@@ -14,25 +18,38 @@ export async function POST(req: Request) {
       data: { nama, id_kategori, kode_golongan },
     });
 
+    // Hapus cache agar data terbaru selalu muncul
+    cache.del("golongan_list");
+
     return NextResponse.json(golongan, { status: 201 });
   } catch (error) {
-    console.error("Error saat menambah golongan:", error); // ✅ Logging error
+    console.error("Error saat menambah golongan:", error);
     return NextResponse.json({ error: "Terjadi kesalahan saat menambah golongan" }, { status: 500 });
   }
 }
 
-
-// 📄 GET LIST GOLONGAN
+// 📄 GET LIST GOLONGAN (Menggunakan cache)
 export async function GET() {
   try {
-    const golongan = await prisma.golongan.findMany({
+    // Cek apakah data sudah ada di cache
+    let golonganList = cache.get("golongan_list");
+    if (golonganList) {
+      return NextResponse.json(golonganList, { status: 200 });
+    }
+
+    // Jika tidak ada, ambil dari database
+    golonganList = await prisma.golongan.findMany({
       include: {
-        kategori: true, // Menampilkan relasi kategori
+        kategori: true, // Menampilkan data kategori yang terkait
       },
     });
-    return NextResponse.json(golongan, { status: 200 });
+
+    // Simpan ke cache
+    cache.put("golongan_list", golonganList, CACHE_DURATION);
+
+    return NextResponse.json(golonganList, { status: 200 });
   } catch (error) {
-    console.error("Error saat mengambil data golongan:", error); // ✅ Logging error
+    console.error("Error saat mengambil data golongan:", error);
     return NextResponse.json({ error: "Gagal mengambil data golongan" }, { status: 500 });
   }
 }
@@ -51,13 +68,15 @@ export async function PUT(req: Request) {
       data: { nama, id_kategori, kode_golongan },
     });
 
+    // Hapus cache agar data terbaru selalu muncul
+    cache.del("golongan_list");
+
     return NextResponse.json(updatedGolongan, { status: 200 });
   } catch (error) {
-    console.error("Error saat mengupdate golongan:", error); // ✅ Logging error
+    console.error("Error saat mengupdate golongan:", error);
     return NextResponse.json({ error: "Gagal mengupdate golongan" }, { status: 500 });
   }
 }
-
 
 // ❌ DELETE GOLONGAN
 export async function DELETE(req: Request) {
@@ -70,9 +89,12 @@ export async function DELETE(req: Request) {
 
     await prisma.golongan.delete({ where: { id } });
 
+    // Hapus cache agar data terbaru selalu muncul
+    cache.del("golongan_list");
+
     return NextResponse.json({ message: "Golongan berhasil dihapus" }, { status: 200 });
   } catch (error) {
-    console.error("Error saat menghapus golongan:", error); // ✅ Logging error
+    console.error("Error saat menghapus golongan:", error);
     return NextResponse.json({ error: "Gagal menghapus golongan" }, { status: 500 });
   }
 }

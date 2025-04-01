@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/lib/prisma";
+import cache from "memory-cache";
 
-// 🆕 CREATE Ruangan
+// 🕒 Waktu cache (5 menit)
+const CACHE_DURATION = 5 * 60 * 1000;
+
+// 🆕 CREATE RUANGAN
 export async function POST(req: Request) {
   try {
     const { nama, gedungId } = await req.json();
@@ -14,6 +18,9 @@ export async function POST(req: Request) {
       data: { nama, id_gedung: gedungId },
     });
 
+    // Hapus cache agar data terbaru selalu muncul
+    cache.del("ruangan_list");
+
     return NextResponse.json(ruangan, { status: 201 });
   } catch (error) {
     console.error("Error saat menambah ruangan:", error);
@@ -21,14 +28,25 @@ export async function POST(req: Request) {
   }
 }
 
-// 📄 GET LIST Ruangan
+// 📄 GET LIST RUANGAN (Menggunakan cache)
 export async function GET() {
   try {
-    const ruanganList = await prisma.ruangan.findMany({
+    // Cek apakah data sudah ada di cache
+    let ruanganList = cache.get("ruangan_list");
+    if (ruanganList) {
+      return NextResponse.json(ruanganList, { status: 200 });
+    }
+
+    // Jika tidak ada, ambil dari database
+    ruanganList = await prisma.ruangan.findMany({
       include: {
         gedung: true, // Menampilkan data Gedung yang terkait
       },
     });
+
+    // Simpan ke cache
+    cache.put("ruangan_list", ruanganList, CACHE_DURATION);
+
     return NextResponse.json(ruanganList, { status: 200 });
   } catch (error) {
     console.error("Error saat mengambil data ruangan:", error);
@@ -36,7 +54,7 @@ export async function GET() {
   }
 }
 
-// ✏️ UPDATE Ruangan
+// ✏️ UPDATE RUANGAN
 export async function PUT(req: Request) {
   try {
     const { id, nama, gedungId } = await req.json();
@@ -50,6 +68,9 @@ export async function PUT(req: Request) {
       data: { nama, id_gedung: gedungId },
     });
 
+    // Hapus cache agar data terbaru selalu muncul
+    cache.del("ruangan_list");
+
     return NextResponse.json(updatedRuangan, { status: 200 });
   } catch (error) {
     console.error("Error saat mengupdate ruangan:", error);
@@ -57,7 +78,7 @@ export async function PUT(req: Request) {
   }
 }
 
-// ❌ DELETE Ruangan
+// ❌ DELETE RUANGAN
 export async function DELETE(req: Request) {
   try {
     const { id } = await req.json();
@@ -67,6 +88,9 @@ export async function DELETE(req: Request) {
     }
 
     await prisma.ruangan.delete({ where: { id } });
+
+    // Hapus cache agar data terbaru selalu muncul
+    cache.del("ruangan_list");
 
     return NextResponse.json({ message: "Ruangan berhasil dihapus" }, { status: 200 });
   } catch (error) {

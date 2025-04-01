@@ -11,6 +11,7 @@ import { Trash, Pencil } from "lucide-react";
 type Golongan = {
   id: number;
   nama: string;
+  kode_golongan:string;
   id_kategori: number;
 };
 
@@ -137,6 +138,7 @@ export default function GolonganPage() {
         <TableHeader>
           <TableRow>
             <TableHead>ID</TableHead>
+            <TableHead>Kode Golongan</TableHead>
             <TableHead>Nama</TableHead>
             <TableHead>Kategori</TableHead>
             <TableHead>Aksi</TableHead>
@@ -147,6 +149,7 @@ export default function GolonganPage() {
             golongan.map((item) => (
               <TableRow key={item.id}>
                 <TableCell>{item.id}</TableCell>
+                <TableCell>{item.kode_golongan}</TableCell>
                 <TableCell>{item.nama}</TableCell>
                 <TableCell>{kategori.find((kat) => kat.id === item.id_kategori)?.nama}</TableCell>
                 <TableCell>

@@ -11,7 +11,10 @@ import { Trash, Pencil } from "lucide-react";
 type Ruangan = {
   id: number;
   nama: string;
-  gedungId: number;
+  gedung: {
+    id: number;
+    nama: string;
+  };
 };
 
 type Gedung = {
@@ -21,7 +24,7 @@ type Gedung = {
 
 export default function RuanganPage() {
   const [ruangan, setRuangan] = useState<Ruangan[]>([]);
-  const [gedung, setGedung] = useState<Gedung[]>([]); // Ensure gedung is always an array
+  const [gedung, setGedung] = useState<Gedung[]>([]);
   const [open, setOpen] = useState(false);
   const [openDelete, setOpenDelete] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -42,12 +45,7 @@ export default function RuanganPage() {
   async function fetchGedung() {
     const res = await fetch("/api/gedung");
     const data = await res.json();
-
-    if (Array.isArray(data)) {
-      setGedung(data);
-    } else {
-      console.error("Gedung data is not an array:", data);
-    }
+    setGedung(Array.isArray(data) ? data : []);
   }
 
   async function handleSave() {
@@ -87,7 +85,6 @@ export default function RuanganPage() {
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Manajemen Ruangan</h1>
       
-      {/* Button Tambah */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button onClick={() => { setNama(""); setGedungId(null); setSelectedId(null); }}>Tambah Ruangan</Button>
@@ -98,22 +95,17 @@ export default function RuanganPage() {
           </DialogHeader>
           <Input value={nama} onChange={(e) => setNama(e.target.value)} placeholder="Nama Ruangan" />
           
-          {/* Select untuk memilih gedung */}
           <Select value={gedungId ? String(gedungId) : ""} onValueChange={(value) => setGedungId(Number(value))}>
             <SelectTrigger>
               <SelectValue placeholder="Pilih Gedung" />
             </SelectTrigger>
             <SelectContent>
               {gedung.length > 0 ? (
-                gedung.map((gedung) => (
-                  <SelectItem key={gedung.id} value={String(gedung.id)}>
-                    {gedung.nama}
-                  </SelectItem>
+                gedung.map((g) => (
+                  <SelectItem key={g.id} value={String(g.id)}>{g.nama}</SelectItem>
                 ))
               ) : (
-                <SelectItem value="no-gedung" disabled>
-                  No Gedung Available
-                </SelectItem>
+                <SelectItem value="no-gedung" disabled>No Gedung Available</SelectItem>
               )}
             </SelectContent>
           </Select>
@@ -122,7 +114,6 @@ export default function RuanganPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Table */}
       <Table className="mt-4">
         <TableHeader>
           <TableRow>
@@ -138,9 +129,9 @@ export default function RuanganPage() {
               <TableRow key={item.id}>
                 <TableCell>{item.id}</TableCell>
                 <TableCell>{item.nama}</TableCell>
-                <TableCell>{gedung.find((gedung) => gedung.id === item.gedungId)?.nama}</TableCell>
+                <TableCell>{item.gedung?.nama ?? "Gedung Tidak Ditemukan"}</TableCell>
                 <TableCell>
-                  <Button variant="ghost" onClick={() => { setNama(item.nama); setGedungId(item.gedungId); setSelectedId(item.id); setOpen(true); }}>
+                  <Button variant="ghost" onClick={() => { setNama(item.nama); setGedungId(item.gedung.id); setSelectedId(item.id); setOpen(true); }}>
                     <Pencil size={16} />
                   </Button>
                   <Button variant="ghost" onClick={() => { setSelectedId(item.id); setOpenDelete(true); }}>
@@ -157,7 +148,6 @@ export default function RuanganPage() {
         </TableBody>
       </Table>
 
-      {/* Dialog Delete */}
       <AlertDialog open={openDelete} onOpenChange={setOpenDelete}>
         <AlertDialogContent>
           <AlertDialogHeader>
