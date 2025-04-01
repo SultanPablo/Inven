@@ -1,7 +1,15 @@
-import { Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from "@/components/ui/sidebar";
-import { title } from "process";
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+} from "@/components/ui/sidebar"
 
-// Menu items for "Kategori" and "Golongan".
+// Menu items.
 const items = [
   {
     title: "Kategori",
@@ -19,7 +27,7 @@ const items = [
     title:"Ruangan",
     url:"/ruangan",
   },
-];
+]
 
 export function AppSidebar() {
   return (
@@ -43,5 +51,5 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
     </Sidebar>
-  );
+  )
 }

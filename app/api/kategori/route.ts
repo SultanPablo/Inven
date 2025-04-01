@@ -31,24 +31,20 @@ export async function POST(req: Request) {
 // 📄 GET LIST KATEGORI (Menggunakan cache)
 export async function GET() {
   try {
-    // Cek apakah data sudah ada di cache
     let kategori = cache.get("kategori_list");
-    if (kategori) {
-      return NextResponse.json(kategori, { status: 200 });
+
+    if (!kategori) {
+      kategori = await prisma.kategori.findMany();
+      cache.put("kategori_list", kategori, CACHE_DURATION);
     }
 
-    // Jika tidak ada, ambil dari database
-    kategori = await prisma.kategori.findMany();
-
-    // Simpan ke cache
-    cache.put("kategori_list", kategori, CACHE_DURATION);
-
-    return NextResponse.json(kategori, { status: 200 });
+    return NextResponse.json(Array.isArray(kategori) ? kategori : [], { status: 200 });
   } catch (error) {
-    console.error("Error saat mengambil data kategori:", error);
-    return NextResponse.json({ error: "Gagal mengambil data kategori" }, { status: 500 });
+    console.error("Error mengambil kategori:", error);
+    return NextResponse.json([], { status: 500 });
   }
 }
+
 
 // ✏️ UPDATE KATEGORI
 export async function PUT(req: Request) {

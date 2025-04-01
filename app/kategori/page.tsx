@@ -27,8 +27,15 @@ export default function KategoriPage() {
   async function fetchKategori() {
     const res = await fetch("/api/kategori");
     const data = await res.json();
-    setKategori(data);
+  
+    if (Array.isArray(data)) {
+      setKategori(data);
+    } else {
+      console.error("Error: Data kategori bukan array", data);
+      setKategori([]); // Hindari error dengan set state default
+    }
   }
+  
 
   async function handleSave() {
     const method = selectedId ? "PUT" : "POST";

@@ -1,5 +1,5 @@
-import { AppSidebar } from "@/components/app-sidebar"; // Adjust the path as needed
-import { SidebarProvider } from "@/components/ui/sidebar"; // Import SidebarProvider
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"; // Sesuaikan path sesuai kebutuhan// 
 import { Geist, Geist_Mono } from "next/font/google";
 import { Metadata } from "next";
 import "./globals.css";
@@ -27,17 +27,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SidebarProvider>
-          <div style={{ display: "flex" }}>
-            {/* Add the sidebar component */}
-            <AppSidebar />
-            {/* Main content area */}
-            <div style={{ flex: 1, paddingLeft: "250px" }}>
-              {/* Children components, like the page content */}
-              {children}
-            </div>
-          </div>
-        </SidebarProvider>
+      <SidebarProvider>
+      <AppSidebar />
+      <main>
+        <SidebarTrigger />
+        {children}
+      </main>
+    </SidebarProvider>
       </body>
     </html>
   );
